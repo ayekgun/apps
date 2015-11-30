@@ -1,0 +1,49 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <h1 class="title">Pemasukan</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closePemasukan()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <form ng-submit="doSavePemasukan()">
+      <div class="list card">        
+        <label class="item item-input " >  
+          <span class="input-label">Jumlah Pemasukan</span>     
+          <input type="number" ng-model="pemasukanData.jumlah">
+          <!-- ion-toggle 
+                    ng-model="item.checked" 
+                    ng-checked="item.checked">          
+          </ion-toggle> -->
+          <h3>Tidak Tetap</h3>
+          <label class="toggle toggle-assertive">
+              <input type="checkbox">
+              <div class="track">
+              <div class="handle"></div>
+           </div>
+          </label>
+          <h3>Tetap</h3>
+        </label>
+        <div class="range">
+          <i class="ion-minus-round"></i>          
+          <input type="range" name="volume" ng-model="data.volume">
+          <i class="ion-plus-round"></i>
+        </div>
+        <label class="item item-input">
+          Tabung : {{data.volume}} %          
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Tanggal</span>
+          <input type="date" ng-model="data.dueDate">         
+        </label>
+
+        
+    </ion-content>
+
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Simpan</button>
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-modal-view>

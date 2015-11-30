@@ -1,0 +1,65 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <h1 class="title">Pengeluaran</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closePengeluaran()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content ng-controller="PlaylistsCtrl">
+    <form ng-submit="doSavePengeluaran()">
+
+      <div class="list card">
+        <label class="item item-input">
+          <span class="input-label">Nama Pengeluaran</span>
+          <input type="text" ng-model="pengeluaranData.nama">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Jumlah Pengeluaran</span>
+          <input type="number" ng-model="pengeluaranData.jumlah">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Tanggal</span>
+          <input type="date" ng-model="data.dueDate">
+                  
+        </label>
+      </div>
+      <div class="list card">
+
+        <label class=" item item-radio">          
+          <!-- <ion-list>
+            <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
+                {{playlist.title}} {{playlist.jumlah}} 
+             </ion-item>
+          </ion-list> -->
+          <!-- <ul class="list item-radio" >
+              <li class="item" ng-repeat="playlist in playlists">
+                  <input type="radio" name="group">                
+                 {{playlist.title}} {{playlist.jumlah}}
+                 <i class="radio-icon ion-checkmark"></i>               
+              </li>
+          </ul> -->
+          <h3 class="item item-divider ">Kategori</h3>
+          <!-- <a class="  item item-icon-left" href="#">
+            <i class="icon ion-mic-a"></i>
+              Record album
+            <span class="item-note">
+              Grammy
+            </span>
+          </a> -->
+          <ion-radio class="item" >
+            <i class="button button-small button-left button-balanced">A</i>
+            <span class="padding-left">HTML</span>
+            <!-- <span class="badge badge-right badge-balanced icon icon-leaf ink-dark ">A</span> -->
+            <!-- <span class="badge badge-assertive">A</span> -->
+          </ion-radio>
+          <ion-radio ng-repeat="playlist in playlists">          
+            {{playlist.title}} {{playlist.jumlah}}
+          </ion-radio>
+        </label>
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Simpan</button>
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-modal-view>
