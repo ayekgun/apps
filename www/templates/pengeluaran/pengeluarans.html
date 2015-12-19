@@ -1,0 +1,14 @@
+<ion-view view-title="Daftar Pengeluaran">
+	<ion-nav-buttons side="right" >
+	      <button class="button button-icon icon ion-plus-round" ng-click="pengeluaran()">        
+	      </button>
+	</ion-nav-buttons>
+  <ion-content>
+    <ion-list>
+      <ion-item ng-click="pengeluaran()" ng-repeat="playlist in playlists" >
+      <!-- href="#/app/playlists/{{playlist.id}}" -->
+        {{playlist.title}} {{playlist.jumlah}} 
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
