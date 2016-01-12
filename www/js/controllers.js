@@ -9,20 +9,18 @@ angular.module('starter.controllers', ['chart.js','ionic','ionic-color-picker'])
   //$scope.$on('$ionicView.enter', function(e) {
   //});
 
-  
+  // Form data for the login modal
+  $scope.loginData = {};
+
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/login.html', {    
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.loginModal = modal;
+  });
+
   // Triggered in the login modal to close it
-
-  $scope.closeLogin = function() {
-    $scope.loginModal.hide();
-    $ionicPopup.alert({
-              title: 'Success',
-              content: 'Anda Berhasil Hello World!!!'
-            }).then(function(res) {
-              console.log('Test Alert Box');
-            });    
-  };
-
-  
 
   
   // Create the login modal that we will use later

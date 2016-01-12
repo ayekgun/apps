@@ -4,11 +4,17 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
+<<<<<<< HEAD
 var db;
 
 angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','ngCordova','pemasukan.controllers','pengeluaran.controllers'])
 
 .run(function($ionicPlatform, $cordovaSQLite) {
+=======
+angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker'])
+
+.run(function($ionicPlatform) {
+>>>>>>> 14a7c70af96a267fec5516765151e85b06c95eaf
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -17,6 +23,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
       cordova.plugins.Keyboard.disableScroll(true);
 
     }
+<<<<<<< HEAD
 
     // if (window.StatusBar) {
     //   // org.apache.cordova.statusbar required
@@ -37,6 +44,12 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
     $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS pengeluaran (id integer primary key, nama text, jumlah int, tanggal DATE, kategori int)");
     $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS kategori(id integer primary key, nama text, warna text )");
     $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS kategoripengeluaran(id integer primary key, nama text, warna text )");
+=======
+    if (window.StatusBar) {
+      // org.apache.cordova.statusbar required
+      StatusBar.styleDefault();
+    }
+>>>>>>> 14a7c70af96a267fec5516765151e85b06c95eaf
   });
 })
 
@@ -49,17 +62,14 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
     templateUrl: 'templates/menu.html',
     controller: 'AppCtrl'
   })
-
- 
-  .state('app.playlists', {
-      url: '/playlists',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/playlists.html',
-          controller: 'pemasukanCtrl'
-        }
+  .state('app.search', {
+    url: '/search',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/search.html'
       }
-    })
+    }
+  })  
   .state('app.kategori-pemasukan', {
       url: '/kategori-pemasukan',
       views: {
@@ -107,10 +117,25 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
         'menuContent': {
           templateUrl: 'templates/grafik/grafik.html', 
           controller : 'grafikCtrl'                  
+=======
+          controller: 'PlaylistsCtrl'
+        }
+      }
+    })
+    
+    
+    .state('app.grafik', {
+      url: '/grafik',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/grafik.html', 
+          controller : 'ExampleController'         
+>>>>>>> 14a7c70af96a267fec5516765151e85b06c95eaf
         }
       }
     })
 
+<<<<<<< HEAD
     .state('app.forecast', {
       url: '/forecast',
       views: {
@@ -140,6 +165,8 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
       }
     })  
 
+=======
+>>>>>>> 14a7c70af96a267fec5516765151e85b06c95eaf
   .state('app.single', {
     url: '/playlists/:playlistId',
     views: {
@@ -150,5 +177,9 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
     }
   });
   // if none of the above states are matched, use this as the fallback
+<<<<<<< HEAD
   $urlRouterProvider.otherwise('/app/home');
+=======
+  $urlRouterProvider.otherwise('/app/playlists');
+>>>>>>> 14a7c70af96a267fec5516765151e85b06c95eaf
 });
