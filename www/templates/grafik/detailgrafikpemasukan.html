@@ -1,8 +1,8 @@
 <ion-view view-title="Grafik">
-  <ion-content ng-controller="donatCtrl">
+  <ion-content ng-controller="grafikCtrl">
     <div class="card"> 
       <label class="item">
-        <h2 class="input-label ">Total Pemasukan : {{totala}} </h2>
+        <h2 class="input-label ">Total Pemasukan : {{totalBulan}} </h2>
       </label> 
     </div>
     <div class="card">
@@ -10,8 +10,8 @@
             A dougnuth chart
         </div>
         <div class="item item-text-wrap">
-            <canvas id="dougnuth" class="chart chart-doughnut" chart-data="datasa" chart-labels="labelsa" chart-colours="colora">
-            </canvas> 
+            <canvas id="dougnuth" class="chart chart-doughnut" chart-data="dataDetilBulan" chart-labels="labelsdataDetilBulan" chart-colours="dataDetilWarna">
+            </canvas>             
         </div>        
     </div>
 </ion-content>

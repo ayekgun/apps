@@ -3,13 +3,13 @@
     <div class="card"> 
       <label class="item item-input">
         <span class="input-label ">Tambah Kategori</span>
-        <input type="text" ng-model="kategoriData.nama">           
+        <input type="text" ng-model="kategoriData.nama">                   
       </label> 
       <label class="item item-input">
         <span class="input-label">Warna</span>
-        <button class="button col-80" color-picker="" model-mode="name" color-mode="name" ng-model="kategoriData.warna" modal-title="Choose!" color-box="{{kategoriData.warna}}">
+        <button class="button col-80" color-picker=""  color-mode="name" ng-model="kategoriData.warna" modal-title="Choose!" color-box="{{kategoriData.warna}}">
           {{kategoriData.warna || &apos;Choose a color&apos;}} 
-        </button>       
+        </button>               
       </label>
       <label class="item ">
         <button ng-click="saveKategori()" class="button button-block button-positive">Simpan</button>

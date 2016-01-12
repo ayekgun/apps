@@ -103,7 +103,7 @@ angular.module('starter.controllers', ['chart.js','ionic','ionic-color-picker'])
     }
 })
 
-.controller('tambahCtrl',function($scope, $ionicModal, $timeout , $ionicPopup){
+.controller('tambahCtrl',function($scope, $ionicModal, $timeout , $ionicPopup, $cordovaSQLite,$filter){
 $ionicModal.fromTemplateUrl('templates/tambah.html', {    
     scope: $scope,
     animation: 'slide-in-up'
@@ -123,6 +123,52 @@ $ionicModal.fromTemplateUrl('templates/tambah.html', {
    $scope.$on('$destroy', function() {      
       $scope.tambahModal.remove();
   });
+       
+       var bulan = [];
+       var sumtotal = [];
+       var total = 0;
+
+       var gb = "";
+       var bulanP = [];
+       var sumtotalP = [];
+       var totalP = 0;
+
+       var query = "SELECT pemasukan.*,sum(pemasukan.jumlah) as total,substr(tanggal, 1, 7) grouBln FROM pemasukan group by grouBln";
+       var data =  $cordovaSQLite.execute(db, query).then(function(res) {
+           if(res.rows.length > 0) {                
+               for(i=0;i<res.rows.length;i++){                    
+                  sumtotal[i] = res.rows.item(i).total;
+                  // total += (res.rows.item(i)).total;                                    
+                  bulan[i] = $filter('date')(new Date(res.rows.item(i).tanggal), "MMMM");
+                  sumtotalP[i] = 0;
+                      gb = res.rows.item(i).grouBln;
+                      var query2 = "SELECT tanggal,sum(jumlah) jumlah FROM pengeluaran where substr(tanggal, 1, 7)='"+gb+"' group by jumlah";
+                      var data2 =  $cordovaSQLite.execute(db, query2).then(function(res) {
+                         if(res.rows.length > 0) {                
+                             for(i=0;i<res.rows.length;i++){                    
+                                sumtotalP[i] = res.rows.item(i).jumlah;                                
+                                bulanP[i] = $filter('date')(new Date(res.rows.item(i).tanggal), "MMMM");                
+                             }                             
+                         } else {                            
+                            console.log(sumtotalP);
+                         }
+                      }, function (err) {
+                         console.error(err);
+                      });
+               }               
+           } else {
+               console.log("No results found");
+           }
+       }, function (err) {
+           console.error(err);
+       });
+
+       
+   console.log(gb);
+       $scope.labels = bulan;
+       $scope.series = ['Pemasukan','Pengeluaran'];
+       $scope.colour = ['#00FF00','#FF0000'];
+       $scope.datass = [sumtotal,sumtotalP];       
 
 })
 
@@ -179,137 +225,85 @@ $ionicModal.fromTemplateUrl('templates/tambah.html', {
   // };
 })
 
-.controller('grafikCtrl',function($scope,$ionicModal, $ionicPopup,$cordovaSQLite,$state,$stateParams){
+.controller('grafikCtrl',function($scope,$ionicModal, $ionicPopup,$cordovaSQLite,$state,$stateParams,$filter){
       $scope.showchart=true;
       $scope.hidechart=false;
-       var labels = [];
-       var datas = [];
-       var tang = [];
-     
-  $scope.getGrafik = function(){
-      var queryTgl = "SELECT sum(jumlah) as jumlah, tabung, substr(tanggal, 9, 7) as tanggal FROM pemasukan group by tanggal";
-       var query = "SELECT jumlah, tabung FROM pemasukan";
-       var data =  $cordovaSQLite.execute(db, queryTgl).then(function(res) {
-           if(res.rows.length > 0) {                
-               for(i=0;i<res.rows.length;i++){                    
-                   labels[i] = res.rows.item(i).jumlah;                                                        
-                   datas[i] = res.rows.item(i).tanggal;
-               }                
-               console.log(labels);               
-               console.log("my datas "+datas);
-           } else {
-               console.log("No results found");
-           }
-       }, function (err) {
-           console.error(err);
-       });
+      
+      var dataLabels = [];
+      var dataNilai = [];
+      var total = 0;      
+      var arr=[];
 
-  };  
+      var queryx = "SELECT pemasukan.*,sum(pemasukan.jumlah) total,substr(tanggal, 1, 7) grouBln FROM pemasukan join kategori on pemasukan.kategori=kategori.id group by grouBln";
+      var data =  $cordovaSQLite.execute(db, queryx).then(function(res) {
+             if(res.rows.length > 0) {            
+                 for(i=0;i<res.rows.length;i++){                    
+                  var b = $filter('date')(new Date(res.rows.item(i).tanggal), "MMMM");                
+                     dataLabels[i] = b;
+                     total += res.rows.item(i).total;                                 
+                     arr[b] = total;
+                     dataNilai[i] = res.rows.item(i).total;                   
+                 }                                                                   
+                 // $scope.totalBulanArr = arr;
+                 // console.log(arr); 
+             } else {
 
-  $scope.getGrafik();
-  $scope.onClick = function (points, evt) {
-    console.log(points);
-    // console.log(points[0]['value']);      
-    // $location.path('app.detilbulan');
-    $state.go('app.detilbulan');
-  };
+                 console.log("No results found");
+             }           
 
-  
+           }, function (err) {
+             console.error(err);
+      });        
+      
+      // console.log(arr);
+      $scope.labels = dataLabels;
+      $scope.datas = dataNilai;    
 
-  $scope.tampil = false;
-  // $scope.listPemasukan = function (){      
-  //   //Fungsi Select Pemasukan
-  //       var query = "SELECT pemasukan.*,kategori.warna,kategori.nama FROM pemasukan left join kategori on pemasukan.kategori=kategori.id order by pemasukan.id desc";
-  //       var data =  $cordovaSQLite.execute(db, query).then(function(res) {
-  //           if(res.rows.length > 0) {
-  //               //console.log("SELECTED -> " + res.rows.item(0).nama_pemasukan + " " + res.rows.item(0).jumlah);                
-  //               for(i=0;i<res.rows.length;i++){                    
-  //                   var nama = res.rows.item(i).nama;                                                                            
-  //                   data[i] = {
-  //                               'id' : res.rows.item(i).id, 
-  //                               'jumlah' : res.rows.item(i).jumlah,
-  //                               'tabung' : res.rows.item(i).tabung,
-  //                               'tanggal' : res.rows.item(i).tanggal,
-  //                               'toggle' : res.rows.item(i).toggle,
-  //                               'kategori' : res.rows.item(i).kategori,
-  //                               'nama' : nama.substring(0,1).toUpperCase(),                                  
-  //                               'namaKategori' : nama,                                  
-  //                               'warna' : res.rows.item(i).warna,
-  //                           };
-  //               }                
-  //               $scope.pemasukans = data;  
-  //               console.log(data);              
-  //           }
-  //           else {
-  //               console.log("No results found");
-  //           }
-  //       }, function (err) {
-  //           console.error(err);
-  //       });
-  //   };
-    // $scope.listPemasukan();
 
-  
-   
-  
-  $scope.pemasukanData = {
-       labels: labels,
-       data: datas
-   };
-  //donat grafik
-  // $scope.labelsA = ["January", "February", "March", "April", "May", "June", "July"];
-  // $scope.dataA = [65, 59, 80, 81, 56, 55, 40];
+      
+
+      $scope.onClick = function (points, evt) {  
+        var labelClick = points[0]['label'];                  
+        $state.go('app.detilbulan',{'bln' : labelClick });
+      };
+
+ 
 
 })
-.controller('donatCtrl',function($scope,$ionicModal, $ionicPopup,$cordovaSQLite, $stateParams){
-       var labelsa = [];
-       var datasa = [];
-       var colora = [];
-       // var totala = [];
-       var total = 0;       
-       var query = "SELECT pemasukan.*,sum(pemasukan.jumlah) as total, kategori.nama, kategori.warna FROM pemasukan left join kategori on pemasukan.kategori=kategori.id group by kategori.id";
-       //var query = "SELECT kategori, jumlah FROM pemasukan";
-       var data =  $cordovaSQLite.execute(db, query).then(function(res) {
-           if(res.rows.length > 0) {                
-               for(i=0;i<res.rows.length;i++){                    
-                   labelsa[i] = res.rows.item(i).nama;
-                   datasa[i] = res.rows.item(i).total;
-                   colora[i] = res.rows.item(i).warna;
-                   total += (res.rows.item(i)).total;
+.controller('donatCtrl',function($scope,$ionicModal, $ionicPopup,$cordovaSQLite, $stateParams,$filter){
+       //routing detilbulan data
+      $scope.totalBulan = 0;      
 
-               }                
-               console.log("my labels = "+labelsa);
-               console.log("my datas "+datasa);
-           } else {
-               console.log("No results found");
-           }
-       }, function (err) {
-           console.error(err);
-       });
+          var dataLabels = [];
+          var dataNilai = [];
+          var dataWarna = [];
+          var dataKategori = [];
+          var total = 0;
 
-   db.transaction(function(tx) {
-   tx.executeSql('sum(pemasukan.jumlah) as total FROM pemasukan', 
-                 [],
-                 function(tx, results)
-                 {
-                   return(result[0].total); 
-                 },
-                 function(tx, error)
-                 {
+          var cariBulan = "2000-"+$stateParams.bln+"20";
+          var filterBln = $filter('date')(new Date(cariBulan), "MM");
+          var queryx = "SELECT pemasukan.*,sum(pemasukan.jumlah) total,kategori.warna,kategori.nama namaKtg ,substr(pemasukan.tanggal,6,2) as tg FROM pemasukan join kategori on pemasukan.kategori=kategori.id where substr(tanggal, 6, 2)='"+filterBln+"' group by kategori.id";
+          var data =  $cordovaSQLite.execute(db, queryx).then(function(res) {
+              if(res.rows.length > 0) {            
+                     for(i=0;i<res.rows.length;i++){                    
+                         dataLabels[i] = $filter('date')(new Date(res.rows.item(i).tanggal), "MMMM");                
+                         total += (res.rows.item(i)).total;
+                         dataNilai[i] = res.rows.item(i).total;                   
+                         dataWarna[i] = res.rows.item(i).warna;                   
+                         dataKategori[i] = res.rows.item(i).namaKtg;
+                     }                                                                   
+                     $scope.totalBulan = total;      
+                 } else {
+                     console.log("No results found");
+                 }           
 
-                 }
-   );
-});
-   //console.log((result[0].total));
-
-             
-   //$scope.pemasukanData = {
-       $scope.labelsa = labelsa;
-       $scope.datasa = datasa;
-       $scope.colora = colora;
-       $scope.totala = total;
-       
-   //};  
+               }, function (err) {
+                 console.error(err);
+          });
+      
+        $scope.labelsdataDetilBulan = dataKategori;
+        $scope.dataDetilBulan = dataNilai;
+        $scope.dataDetilWarna = dataWarna;
 
 })
 .directive("formatDate", function(){

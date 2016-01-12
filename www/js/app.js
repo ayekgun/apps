@@ -131,11 +131,11 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
       }
     })
   .state('app.detilbulan', {
-      url: '/detilbulan',
+      url: '/detilbulan/:bln',
       views: {
         'menuContent': {
           templateUrl: 'templates/grafik/detailgrafikpemasukan.html',
-          controller : 'grafikCtrl'         
+          controller : 'donatCtrl'         
         }
       }
     })  

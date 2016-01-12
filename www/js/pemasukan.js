@@ -1,6 +1,6 @@
 angular.module('pemasukan.controllers', ['chart.js','ionic','ionic-color-picker'])  
 
-.controller('pemasukanCtrl',function($scope,$http, $ionicModal, $timeout , $ionicPopup, $cordovaSQLite, $stateParams){
+.controller('pemasukanCtrl',function($scope,$http, $ionicModal, $timeout , $ionicPopup, $cordovaSQLite, $stateParams,$filter){
 
   $scope.pemasukanData = {tabung : 0};
   
@@ -53,8 +53,9 @@ angular.module('pemasukan.controllers', ['chart.js','ionic','ionic-color-picker'
   $scope.doUpdatePemasukan = function(){
     var data = $scope.pemasukanData;    
     var dataDetil = [];
+    var d = $filter('date')(new Date(data.tanggal), "yyyy-MM-dd");
     var query = "INSERT OR REPLACE INTO pemasukan (id, jumlah, toggle, tabung, tanggal, kategori)" + "VALUES (?,?,?,?,?,?)";    
-    var data =  $cordovaSQLite.execute(db, query , [data.id, data.jumlah, data.toggle, data.tabung, data.tanggal, data.kategori]).then(function(res) {
+    var data =  $cordovaSQLite.execute(db, query , [data.id, data.jumlah, data.toggle, data.tabung, d, data.kategori]).then(function(res) {
             if(res.rows.length > 0) {                
                 for(i=0;i<res.rows.length;i++){
                     dataDetil = res.rows.item(i);          
@@ -155,8 +156,9 @@ angular.module('pemasukan.controllers', ['chart.js','ionic','ionic-color-picker'
 $scope.doSavePemasukan = function() {
 
             var data = $scope.pemasukanData;
+            var d = $filter('date')(new Date(data.tanggal), "yyyy-MM-dd");
             var query = "INSERT INTO pemasukan (jumlah, toggle, tabung, tanggal, kategori) VALUES (?,?,?,?,?)";
-            $cordovaSQLite.execute(db, query, [data.jumlah, data.toggle, data.tabung, data.tanggal, data.kategori]).then(function(res) {
+            $cordovaSQLite.execute(db, query, [data.jumlah, data.toggle, data.tabung, d, data.kategori]).then(function(res) {
                 console.log("INSERT ID -> " + res.insertId);
                 var alertPopup = $ionicPopup.alert({
                     title: 'Success',
@@ -181,7 +183,8 @@ $scope.doSavePemasukan = function() {
                     }; 
 
     $scope.saveKategori = function() {            
-            var data = $scope.kategoriData;                    
+            var data = $scope.kategoriData;   
+            console.log(data);                 
             var query = "INSERT INTO kategori (nama, warna) VALUES (?,?)";
             $cordovaSQLite.execute(db, query, [data.nama, data.warna]).then(function(res) {
                 console.log("INSERT ID -> " + res.insertId);

@@ -1,5 +1,5 @@
 angular.module('pengeluaran.controllers', ['chart.js','ionic','ionic-color-picker'])
-.controller('pengeluaranCtrl',function($scope,$http, $ionicModal, $timeout , $ionicPopup, $cordovaSQLite, $stateParams){
+.controller('pengeluaranCtrl',function($scope,$http, $ionicModal, $timeout , $ionicPopup, $cordovaSQLite, $stateParams,$filter){
   $scope.pengeluaranData = {};
   $scope.datas = {};
 
@@ -55,8 +55,9 @@ angular.module('pengeluaran.controllers', ['chart.js','ionic','ionic-color-picke
   $scope.doUpdatePengeluaran = function(){
     var data = $scope.pengeluaranData;    
     var dataDetil = [];
+    var d = $filter('date')(new Date(data.tanggal), "yyyy-MM-dd");
     var query = "INSERT OR REPLACE INTO pengeluaran (id, nama, jumlah, tanggal, kategori)" + "VALUES (?,?,?,?,?)";    
-    var data =  $cordovaSQLite.execute(db, query , [data.id, data.nama, data.jumlah, data.tanggal, data.kategori]).then(function(res) {
+    var data =  $cordovaSQLite.execute(db, query , [data.id, data.nama, data.jumlah, d, data.kategori]).then(function(res) {
             if(res.rows.length > 0) {                
                 for(i=0;i<res.rows.length;i++){
                     dataDetil = res.rows.item(i);          
@@ -127,9 +128,9 @@ angular.module('pengeluaran.controllers', ['chart.js','ionic','ionic-color-picke
             
 
             var data = $scope.pengeluaranData;
-            //var data2 = $scope.datas;
+            var d = $filter('date')(new Date(data.tanggal), "yyyy-MM-dd");
             var query = "INSERT INTO pengeluaran (nama, jumlah, tanggal, kategori) VALUES (?,?,?,?)";
-            $cordovaSQLite.execute(db, query, [data.nama, data.jumlah, data.tanggal, data.kategori]).then(function(res) {
+            $cordovaSQLite.execute(db, query, [data.nama, data.jumlah, d, data.kategori]).then(function(res) {
                 console.log("INSERT ID -> " + res.insertId);
                 var alertPopup = $ionicPopup.alert({
                     title: 'Success',
