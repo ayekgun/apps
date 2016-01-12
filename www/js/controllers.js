@@ -43,8 +43,47 @@ angular.module('starter.controllers', ['chart.js','ionic','ionic-color-picker'])
 
 })
 
-.controller('PlaylistsCtrl', function($scope) {
-  $scope.playlists = [
+
+.controller('popoverCtrl', function($scope, $ionicPopover) {
+
+  // .fromTemplate() method
+  var template = '<ion-popover-view><ion-header-bar> <h1 class="title">My Popover Title</h1> </ion-header-bar> <ion-content> Hello! </ion-content></ion-popover-view>';
+
+  $scope.popover = $ionicPopover.fromTemplate(template, {
+    scope: $scope
+  });
+
+  // .fromTemplateUrl() method
+  $ionicPopover.fromTemplateUrl('my-popover.html', {
+    scope: $scope
+  }).then(function(popover) {
+    $scope.popover = popover;
+  });
+
+
+  $scope.openPopover = function($event) {
+    $scope.popover.show($event);
+  };
+  $scope.closePopover = function() {
+    $scope.popover.hide();
+  };
+  //Cleanup the popover when we're done with it!
+  $scope.$on('$destroy', function() {
+    $scope.popover.remove();
+  });
+  // Execute action on hide popover
+  $scope.$on('popover.hidden', function() {
+    // Execute action
+  });
+  // Execute action on remove popover
+  $scope.$on('popover.removed', function() {
+    // Execute action
+  });
+})
+
+.factory("items", function(){
+  var items = {};
+  items.isi=[
     { title: 'makan', jumlah: 2000, id: 1 },
     { title: 'minum', jumlah: 2000, id: 2 },
     { title: 'ngopi', jumlah: 2000, id: 3 },
@@ -52,6 +91,16 @@ angular.module('starter.controllers', ['chart.js','ionic','ionic-color-picker'])
     { title: 'Rap',   jumlah: 0, id: 5 },
     { title: 'Cowbe', jumlah: null, id: 6 }
   ];
+  return items;
+})
+
+.controller('PlaylistsCtrl', function($scope, items) {
+  $scope.items = items;
+  $scope.addItem = function (index) {
+        items.isi.push({            
+            title: $scope.newItemName
+        });
+    }
 })
 
 .controller('tambahCtrl',function($scope, $ionicModal, $timeout , $ionicPopup){
@@ -82,264 +131,185 @@ $ionicModal.fromTemplateUrl('templates/tambah.html', {
 })
 
   //color pic
-.controller('MainCtrl', ['$scope', function ($scope) {
-  $scope.testColors = {
-     first : null,
-     second : null,
-     third : null
-  }
+.controller('MainCtrl', function($scope,$http, $ionicModal, $timeout , $ionicPopup, $cordovaSQLite, $stateParams){
+    $scope.doSaveKategori = function() {            
 
-  $scope.customColors = {
-    "redcanaglia" : "#ff0000",
-    "canaryblue" : "#33ffff"
-  }
-  
-}])
-.controller('pemasukanCtrl',function($scope,$http, $ionicModal, $timeout , $ionicPopup, $cordovaSQLite, $stateParams){
-
-  $scope.pemasukanData = {tabung : 0};
-  // $http.get(url).success(function(data){
-  //    $scope.data = data; // get row data
-  //    $scope.data.tanggal = new Date($scope.data.tanggal); // convert filed to date
-  //     });
-  //$scope.pemasukanData.tanggal = new Date($scope.pemasukanData.tanggal);
-
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/pemasukan/pemasukan.html', {    
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.pemasukanModal = modal;
-  });
-
-  $scope.showAddChangeDialog = function(action) {
-        $scope.action = action;
-        $scope.pemasukanModal.show();
-      };  
-
-  // Open the login modal
-  $scope.pemasukan = function(action) {    
-    $scope.showAddChangeDialog('add');
-    //$scope.pemasukanModal.show();
-  };
-
-  // Triggered in the login modal to close it
-  $scope.closePemasukan = function() {
-    $scope.pemasukanModal.hide();   
-  };
-
-  $scope.getPemasukan = function(id) {
-
-        var dataDetil= [];        
-        var query = "SELECT * FROM pemasukan where id ="+id;
-        var data =  $cordovaSQLite.execute(db, query).then(function(res) {
-            if(res.rows.length > 0) {                
-                for(i=0;i<res.rows.length;i++){
-                    dataDetil = res.rows.item(i);          
-                }                
-                $scope.pemasukanData = dataDetil;                
-            } else {
-                console.log("No results found");
-            }
-        }, function (err) {
-            console.error(err);
-        });
-        $scope.showAddChangeDialog('change');
-        //$scope.pemasukanModal.show();
-    };
-    
-    //db.transaction(updateRecord, errorDB, successDB);
-
-  $scope.doUpdatePemasukan = function(){
-    var data = $scope.pemasukanData;    
-    var dataDetil = [];
-    var query = "INSERT OR REPLACE INTO pemasukan (id, jumlah, toggle, tabung, tanggal)" + "VALUES (?,?,?,?,?)";
-    //var query = "UPDATE pemasukan SET (jumlah, toggle, tabung, tanggal) VALUES (?,?,?,?) where id ="+id;
-    var data =  $cordovaSQLite.execute(db, query , [data.id, data.jumlah, data.toggle, data.tabung, data.tanggal]).then(function(res) {
-            if(res.rows.length > 0) {                
-                for(i=0;i<res.rows.length;i++){
-                    dataDetil = res.rows.item(i);          
-                }                
-                $scope.pemasukanData = dataDetil;                
-            } else {
-                console.log("No results found");
-            }
-            var query = "SELECT * FROM pemasukan order by id desc";
-                var data =  $cordovaSQLite.execute(db, query).then(function(res) {
-                    if(res.rows.length > 0) {                
-                        for(i=0;i<res.rows.length;i++){
-                            data[i] = res.rows.item(i);          
-                        }                
-                        $scope.pemasukans =data;
-                        //$scope.pemasukanData = { nama_pemasukan: '', jumlah: '',keterangan:'' };                        
-                    } else {
-                        console.log("No results found");
-                    }
-                }, function (err) {
-                    console.error(err);
-                });
-                $scope.pemasukanModal.hide();            
-        }, function (err) {
-            console.error(err);
-        });
-
-  };
-  // $scope.doDeletePemasukan = function (id){
-  //   var index = getSelected index
-
-  // };
-  
-  // // Fungsi simpan pemasukan
-  // $scope.doSavePemasukan = function() {
-  //   console.log('Data pemasukan', $scope.pemasukanData);    
-  //   $ionicPopup.alert({
-  //             title: 'Success',
-  //             content: 'Simpan Berhasil!'
-  //           }).then(function(res) {
-  //             console.log('Test Alert Box');
-  //           });
-  //   $scope.pemasukanModal.hide();
-
-  // };
-  //Fungsi Select Pemasukan
-  var query = "SELECT * FROM pemasukan order by id desc";
-        var data =  $cordovaSQLite.execute(db, query).then(function(res) {
-            if(res.rows.length > 0) {
-                //console.log("SELECTED -> " + res.rows.item(0).nama_pemasukan + " " + res.rows.item(0).jumlah);                
-                for(i=0;i<res.rows.length;i++){
-                    data[i] = res.rows.item(i);
-                }                
-                $scope.pemasukans = data;                
-            }
-            else {
-                console.log("No results found");
-            }
-        }, function (err) {
-            console.error(err);
-        });
-
-   if($stateParams.pemasukanId){
-        var dataDetil= [];
-        var id = $stateParams.pemasukanId;           
-        var query = "SELECT * FROM pemasukan where id ="+id;
-        var data =  $cordovaSQLite.execute(db, query).then(function(res) {
-            if(res.rows.length > 0) {                
-                for(i=0;i<res.rows.length;i++){
-                    dataDetil = res.rows.item(i);          
-                }                
-                $scope.pemasukanDetil = dataDetil;
-                console.log($scope.pemasukanDetil);
-            } else {
-                console.log("No results found");
-            }
-        }, function (err) {
-            console.error(err);
-        });
-    }
-  else{
-        console.log('params not found');
-    }
-
-// $scope.select = function() {     
-//         console.log($stateParams.pemasukanId);
-//         var query = "SELECT firstname, lastname FROM people WHERE lastname = ?";
-//         $cordovaSQLite.execute(db, query, [lastname]).then(function(res) {
-//             if(res.rows.length > 0) {
-//                 console.log("SELECTED -> " + res.rows.item(0).firstname + " " + res.rows.item(0).lastname);
-//             } else {
-//                 console.log("No results found");
-//             }
-//         }, function (err) {
-//             console.error(err);
-//         });
-//     }
-
-$scope.doSavePemasukan = function() {        
-            var data = $scope.pemasukanData;
-            var query = "INSERT INTO pemasukan (jumlah, toggle, tabung, tanggal) VALUES (?,?,?,?)";
-            $cordovaSQLite.execute(db, query, [data.jumlah, data.toggle, data.tabung, data.tanggal]).then(function(res) {
+            var data = $scope.kategoriData;
+            //var data2 = $scope.datas;
+            var query = "INSERT INTO kategori (nama) VALUES (?)";
+            $cordovaSQLite.execute(db, query, [data.nama]).then(function(res) {
                 console.log("INSERT ID -> " + res.insertId);
                 var alertPopup = $ionicPopup.alert({
                     title: 'Success',
                     template: 'data '+res.insertId+' berhasil disimpan'
                 });
-                var query = "SELECT * FROM pemasukan order by id desc";
+                var query = "SELECT * FROM kategori order by id desc";
                 var data =  $cordovaSQLite.execute(db, query).then(function(res) {
                     if(res.rows.length > 0) {                
                         for(i=0;i<res.rows.length;i++){
                             data[i] = res.rows.item(i);          
                         }                
-                        $scope.pemasukans =data;
-                        //$scope.pemasukanData = { nama_pemasukan: '', jumlah: '',keterangan:'' };                        
+                        $scope.kategoris =data;                                                
                     } else {
                         console.log("No results found");
                     }
                 }, function (err) {
                     console.error(err);
                 });
-                $scope.pemasukanModal.hide();    
+                    
             }, function (err) {
                 console.error(err);
                 var alertPopup = $ionicPopup.alert({
                     title: 'Error',
                     template: 'data gagal disimpan'
                 });
+                
             });
     };
-  
-  $scope.$on('$destroy', function() {       
-      $scope.pemasukanModal.remove();
-   });  
-  
-  // $scope.playlists = [
-  //   { title: 'makan', jumlah: 2000, id: 1 },
-  //   { title: 'minum', jumlah: 2000, id: 2 },
-  //   { title: 'ngopi', jumlah: 2000, id: 3 },
-  //   { title: 'burjo', jumlah: 2000, id: 4 },
-  //   { title: 'Rap',   jumlah: 0, id: 5 },
-  //   { title: 'Cowbe', jumlah: null, id: 6 }
-  // ];
 
+  // $scope.kategori = {
+  //    first : null,
+  //    warna : null,
+  //    third : null
+  // };
+
+  // $scope.customColors = {
+  //   "redcanaglia" : "#ff0000",
+  //   "canaryblue" : "#33ffff"
+  // };
 })
 
-.controller('pengeluaranCtrl',function($scope, $ionicModal, $timeout , $ionicPopup){
-  $scope.pengeluaranData = {};
+.controller('grafikCtrl',function($scope,$ionicModal, $ionicPopup,$cordovaSQLite,$state,$stateParams){
+      $scope.showchart=true;
+      $scope.hidechart=false;
+       var labels = [];
+       var datas = [];
+       var tang = [];
+     
+  $scope.getGrafik = function(){
+      var queryTgl = "SELECT sum(jumlah) as jumlah, tabung, substr(tanggal, 9, 7) as tanggal FROM pemasukan group by tanggal";
+       var query = "SELECT jumlah, tabung FROM pemasukan";
+       var data =  $cordovaSQLite.execute(db, queryTgl).then(function(res) {
+           if(res.rows.length > 0) {                
+               for(i=0;i<res.rows.length;i++){                    
+                   labels[i] = res.rows.item(i).jumlah;                                                        
+                   datas[i] = res.rows.item(i).tanggal;
+               }                
+               console.log(labels);               
+               console.log("my datas "+datas);
+           } else {
+               console.log("No results found");
+           }
+       }, function (err) {
+           console.error(err);
+       });
 
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/pengeluaran/pengeluaran.html', {    
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then(function(modal) {
-    $scope.pengeluaranModal = modal;
-  });
-  
-  // Open the login modal
-  $scope.pengeluaran = function() {
-    $scope.pengeluaranModal.show();
+  };  
+
+  $scope.getGrafik();
+  $scope.onClick = function (points, evt) {
+    console.log(points);
+    // console.log(points[0]['value']);      
+    // $location.path('app.detilbulan');
+    $state.go('app.detilbulan');
   };
 
-  // Triggered in the login modal to close it
-  $scope.closePengeluaran = function() {
-    $scope.pengeluaranModal.hide();    
-  };
+  
+
+  $scope.tampil = false;
+  // $scope.listPemasukan = function (){      
+  //   //Fungsi Select Pemasukan
+  //       var query = "SELECT pemasukan.*,kategori.warna,kategori.nama FROM pemasukan left join kategori on pemasukan.kategori=kategori.id order by pemasukan.id desc";
+  //       var data =  $cordovaSQLite.execute(db, query).then(function(res) {
+  //           if(res.rows.length > 0) {
+  //               //console.log("SELECTED -> " + res.rows.item(0).nama_pemasukan + " " + res.rows.item(0).jumlah);                
+  //               for(i=0;i<res.rows.length;i++){                    
+  //                   var nama = res.rows.item(i).nama;                                                                            
+  //                   data[i] = {
+  //                               'id' : res.rows.item(i).id, 
+  //                               'jumlah' : res.rows.item(i).jumlah,
+  //                               'tabung' : res.rows.item(i).tabung,
+  //                               'tanggal' : res.rows.item(i).tanggal,
+  //                               'toggle' : res.rows.item(i).toggle,
+  //                               'kategori' : res.rows.item(i).kategori,
+  //                               'nama' : nama.substring(0,1).toUpperCase(),                                  
+  //                               'namaKategori' : nama,                                  
+  //                               'warna' : res.rows.item(i).warna,
+  //                           };
+  //               }                
+  //               $scope.pemasukans = data;  
+  //               console.log(data);              
+  //           }
+  //           else {
+  //               console.log("No results found");
+  //           }
+  //       }, function (err) {
+  //           console.error(err);
+  //       });
+  //   };
+    // $scope.listPemasukan();
 
   
-  // Perform the login action when the user submits the login form
+   
   
-  $scope.playlists = [
-    { title: 'makan', jumlah: 2000, id: 1 },
-    { title: 'minum', jumlah: 2000, id: 2 },
-    { title: 'ngopi', jumlah: 2000, id: 3 },
-    { title: 'burjo', jumlah: 2000, id: 4 },
-    { title: 'Rap',   jumlah: 0, id: 5 },
-    { title: 'Cowbe', jumlah: null, id: 6 }
-  ];
-
-})
-.controller('grafikCtrl',function($scope){
+  $scope.pemasukanData = {
+       labels: labels,
+       data: datas
+   };
   //donat grafik
-  $scope.labelsA = ["January", "February", "March", "April", "May", "June", "July"];
-  $scope.dataA = [65, 59, 80, 81, 56, 55, 40];
+  // $scope.labelsA = ["January", "February", "March", "April", "May", "June", "July"];
+  // $scope.dataA = [65, 59, 80, 81, 56, 55, 40];
+
+})
+.controller('donatCtrl',function($scope,$ionicModal, $ionicPopup,$cordovaSQLite, $stateParams){
+       var labelsa = [];
+       var datasa = [];
+       var colora = [];
+       // var totala = [];
+       var total = 0;       
+       var query = "SELECT pemasukan.*,sum(pemasukan.jumlah) as total, kategori.nama, kategori.warna FROM pemasukan left join kategori on pemasukan.kategori=kategori.id group by kategori.id";
+       //var query = "SELECT kategori, jumlah FROM pemasukan";
+       var data =  $cordovaSQLite.execute(db, query).then(function(res) {
+           if(res.rows.length > 0) {                
+               for(i=0;i<res.rows.length;i++){                    
+                   labelsa[i] = res.rows.item(i).nama;
+                   datasa[i] = res.rows.item(i).total;
+                   colora[i] = res.rows.item(i).warna;
+                   total += (res.rows.item(i)).total;
+
+               }                
+               console.log("my labels = "+labelsa);
+               console.log("my datas "+datasa);
+           } else {
+               console.log("No results found");
+           }
+       }, function (err) {
+           console.error(err);
+       });
+
+   db.transaction(function(tx) {
+   tx.executeSql('sum(pemasukan.jumlah) as total FROM pemasukan', 
+                 [],
+                 function(tx, results)
+                 {
+                   return(result[0].total); 
+                 },
+                 function(tx, error)
+                 {
+
+                 }
+   );
+});
+   //console.log((result[0].total));
+
+             
+   //$scope.pemasukanData = {
+       $scope.labelsa = labelsa;
+       $scope.datasa = datasa;
+       $scope.colora = colora;
+       $scope.totala = total;
+       
+   //};  
 
 })
 .directive("formatDate", function(){

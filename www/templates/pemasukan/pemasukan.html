@@ -7,14 +7,16 @@
   <ion-header-bar>
     <h1 class="title">Pemasukan</h1>
     <div class="buttons">
-      <button class="button button-clear" ng-click="closePemasukan()">Close</button>
+      <button class="button button-clear" ng-click="closePemasukan()">Close</button>      
+    </div>
+    <div class="buttons">
+      <button class="button button-icon-left button-icon icon ion-trash-a" ng-click="doDeletePemasukan()" ng-show="action == 'change'">
     </div>
   </ion-header-bar>
   <ion-content>
     <form ng-show="action == 'add'" ng-submit="doSavePemasukan()">
-      <div class="list card">        
-        <label class="item item-input" >
-          
+      <div class="list card">              
+        <label class="item item-input" >          
           <span class="input-label">Jumlah Pemasukan</span>
           <input type="number" ng-model="pemasukanData.jumlah">
           <label  class="toggle">
@@ -51,15 +53,30 @@
         
     </ion-content>
 
+              
+      </div>
+      <div class="list card">
+
+        <label class=" item item-radio">
+          <h3 class="item item-divider ">Kategori</h3>
+          <ion-radio ng-repeat="item in kategoriList;"
+             ng-value="item.value"
+             ng-model="pemasukanData.kategori">             
+             <button class="button"  style="background-color:{{item.warna}}; color: #000; font-weight: bold; font-size:13px">
+                 {{ item.nama }}                
+            </button>
+                 <label style="padding:20px"> {{ item.text }}</label>
+          </ion-radio>
+        </label>
         <label class="item">
-          <button type="submit" class="button button-block button-positive" >Simpan</button>          
-        </label>        
+           <button type="submit"  class="button button-block button-positive">Simpan</button>
+        </label>
       </div>
     </form>
 
     <!-- ******************************************************************************************************************************************************************************************************************* -->
     
-    <form ng-submit="doUpdatePemasukan()" ng-show="action == 'change'">
+    <form ng-submit="doUpdatePemasukan()" ng-show="action == 'change'">   
       <div class="list card">        
         <label class="item item-input" >
           
@@ -99,9 +116,21 @@
         
     </ion-content>
 
+               
+      </div>
+      <div class="list card">
+
+        <label class=" item item-radio">
+          <h3 class="item item-divider ">Kategori</h3>
+          <ion-radio ng-repeat="item in kategoriList"
+             ng-value="item.value"
+             ng-model="pemasukanData.kategori">
+            {{ item.text }}
+          </ion-radio>
+        </label>
         <label class="item">
            <button ng-click="doUpdatePemasukan()"  class="button button-block button-positive">Edit</button>
-        </label>        
+        </label>
       </div>
     </form>
   </ion-content>

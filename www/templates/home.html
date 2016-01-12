@@ -1,8 +1,25 @@
-<ion-view view-title="HOME">
+<ion-view view-title="HOME" ng-controller="popoverCtrl">
     <ion-nav-buttons side="right" >
-      <button class="button button-icon icon ion-plus-round" ng-click="tambah()">        
+      <button class="button button-icon icon ion-android-more-vertical" ng-click="openPopover($event)" >        
       </button>
     </ion-nav-buttons>
     <ion-content>      
     </ion-content>
+    <script id="my-popover.html" type="text/ng-template">
+	  <ion-popover-view>
+	    <ion-header-bar>
+	      <h1 class="title">Setting</h1>
+	    </ion-header-bar>
+	    <ion-content>
+	     <div class="list">            
+            <a class="item" href="#/app/kategori-pemasukan">
+              Kategori Pemasukan
+            </a>
+            <a class="item" href="#/app/kategori-pengeluaran">
+              Kategori Pengeluaran
+            </a>
+        </div>
+	    </ion-content>
+	  </ion-popover-view>
+	</script>
   </ion-view>

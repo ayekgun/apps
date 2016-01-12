@@ -1,11 +1,11 @@
 <ion-view view-title="Grafik">
-  <ion-content ng-controller="grafikCtrl">
+  <ion-content >
     <div class="card">
         <div class="item item-divider">
             A dougnuth chart
         </div>
         <div class="item item-text-wrap">
-            <canvas id="doughnut" class="chart chart-doughnut"chart-data="dataA" chart-labels="labelsA">
+            <canvas id="pie" class="chart chart-pie"chart-data="pemasukanData.data" chart-labels="pemasukanData.labels" chart-click="onClick">
             </canvas> 
         </div>        
     </div>

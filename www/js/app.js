@@ -6,7 +6,7 @@
 // 'starter.controllers' is found in controllers.js
 var db;
 
-angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','ngCordova'])
+angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','ngCordova','pemasukan.controllers','pengeluaran.controllers'])
 
 .run(function($ionicPlatform, $cordovaSQLite) {
   $ionicPlatform.ready(function() {
@@ -26,16 +26,17 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
     // window.sqlitePlugin.deleteDatabase({name: "my.db", location: 1}, successcb, errorcb); 
 
     if (window.cordova) {            
-            db = $cordovaSQLite.openDB({ name: "my.database11" }); //device
+            db = $cordovaSQLite.openDB({ name: "my.database34" }); //device
         }
     else{
-             db = window.openDatabase("my.database11", '1', 'my', 1024 * 1024 * 100); // browser
+             db = window.openDatabase("my.database34", '1', 'my', 1024 * 1024 * 100); // browser
         }                
         
     // $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS people (id integer primary key, firstname text, lastname text)");
-    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS pemasukan (id integer primary key, jumlah int, tabung int, tanggal DATE, toggle BOOLEAN)");
-
-
+    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS pemasukan (id integer primary key, jumlah int, tabung int, tanggal DATE, toggle BOOLEAN, kategori int)");
+    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS pengeluaran (id integer primary key, nama text, jumlah int, tanggal DATE, kategori int)");
+    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS kategori(id integer primary key, nama text, warna text )");
+    $cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS kategoripengeluaran(id integer primary key, nama text, warna text )");
   });
 })
 
@@ -55,7 +56,25 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
       views: {
         'menuContent': {
           templateUrl: 'templates/playlists.html',
-          controller: 'PlaylistsCtrl'
+          controller: 'pemasukanCtrl'
+        }
+      }
+    })
+  .state('app.kategori-pemasukan', {
+      url: '/kategori-pemasukan',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/pemasukan/kategori-pemasukan.html',
+          controller: 'pemasukanCtrl'
+        }
+      }
+    })
+  .state('app.kategori-pengeluaran', {
+      url: '/kategori-pengeluaran',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/pengeluaran/kategori-pengeluaran.html',
+          controller: 'pengeluaranCtrl'
         }
       }
     })
@@ -78,7 +97,7 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
           controller: 'pengeluaranCtrl'          
         }
       }
-    })
+    })  
     
     
     .state('app.grafik', {
@@ -111,6 +130,15 @@ angular.module('starter', ['ionic', 'starter.controllers','ionic-color-picker','
         }
       }
     })
+  .state('app.detilbulan', {
+      url: '/detilbulan',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/grafik/detailgrafikpemasukan.html',
+          controller : 'grafikCtrl'         
+        }
+      }
+    })  
 
   .state('app.single', {
     url: '/playlists/:playlistId',
